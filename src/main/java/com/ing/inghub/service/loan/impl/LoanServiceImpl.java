@@ -23,7 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -87,7 +86,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
 
-    private PaymentDto payInstallments(List<LoanInstallment> notPaidInstallmentList, Customer customer, Long paymentAmount, Loan loan){
+    private PaymentDto payInstallments(List<LoanInstallment> notPaidInstallmentList, Customer customer, Long paymentAmount, Loan loan) {
         Instant payableDateUntil = calculateDueDate(Constants.MAX_INSTALLMENT_COUNT_FOR_SINGLE_PAYMENT);
         List<LoanInstallment> installmentsUntilPayableDate = notPaidInstallmentList.stream()
                 .filter(installment -> installment.getDueDate().equals(payableDateUntil) || installment.getDueDate().isBefore(payableDateUntil)).toList();
@@ -95,7 +94,7 @@ public class LoanServiceImpl implements LoanService {
         Long totalAmountSpent = 0L;
         Long amountLeft = paymentAmount;
         for (LoanInstallment installment : installmentsUntilPayableDate) {
-            if (amountLeft.compareTo(installment.getAmount()) > 0) {
+            if (amountLeft.compareTo(installment.getAmount()) >= 0) {
                 doPayment(installment, customer);
                 totalAmountSpent += installment.getAmount();
                 paidInstallmentCount++;
@@ -146,7 +145,7 @@ public class LoanServiceImpl implements LoanService {
     private void validateUser(long customerId) throws IngException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Customer customer = customerService.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IngException(ErrorCodes.E_INVALID_ACCESS));
-        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.name())) && !customer.getId().equals(customerId)) {
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + UserRole.ADMIN.name())) && !customer.getId().equals(customerId)) {
             throw new IngException(ErrorCodes.E_INVALID_ACCESS);
         }
     }
