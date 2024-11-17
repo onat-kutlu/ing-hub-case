@@ -21,6 +21,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final PasswordService passwordService;
 
+
     @Override
     public Optional<Customer> findByUsername(String username) {
         return customerRepository.findByUsername(username);
@@ -33,5 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCreditLimit(Constants.DEFAULT_CREDIT_LIMIT);
         customerRepository.save(customer);
         return CustomerMapper.from(customer);
+    }
+
+    @Override
+    public Optional<Customer> findByCustomerId(Long customerId) {
+        return customerRepository.findById(customerId);
     }
 }

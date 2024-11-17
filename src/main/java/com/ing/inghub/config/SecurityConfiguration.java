@@ -35,7 +35,8 @@ public class SecurityConfiguration {
                         /*AuthenticationController*/
                         .requestMatchers("/api/v0/auth/register").permitAll()
                         .requestMatchers("/api/v0/auth/login").permitAll()
-
+                        /*LoanController*/
+                        .requestMatchers("/api/v0/loan/create").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

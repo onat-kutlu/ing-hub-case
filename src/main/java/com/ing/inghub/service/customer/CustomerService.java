@@ -11,4 +11,6 @@ public interface CustomerService {
     Optional<Customer> findByUsername(String username);
 
     CustomerDto createCustomer(RegisterRequest registerRequest);
+
+    Optional<Customer> findByCustomerId(Long customerId);
 }
