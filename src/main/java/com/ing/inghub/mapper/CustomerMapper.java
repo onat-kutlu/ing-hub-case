@@ -26,7 +26,7 @@ public class CustomerMapper {
                 .setPassword(customer.getPassword())
                 .setCreditLimit(customer.getCreditLimit())
                 .setUsedCreditLimit(customer.getUsedCreditLimit())
-                .setStatus(customer.getStatus());
+                .setStatus(customer.getRole());
     }
 
 }

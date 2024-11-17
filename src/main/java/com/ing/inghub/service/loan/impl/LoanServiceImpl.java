@@ -4,7 +4,7 @@ import com.ing.inghub.constants.constants.Constants;
 import com.ing.inghub.constants.errorcodes.ErrorCodes;
 import com.ing.inghub.dto.base.ServiceResult;
 import com.ing.inghub.dto.loan.*;
-import com.ing.inghub.enums.CustomerStatusEnum;
+import com.ing.inghub.enums.UserRole;
 import com.ing.inghub.exception.IngException;
 import com.ing.inghub.mapper.LoanMapper;
 import com.ing.inghub.model.Customer;
@@ -14,6 +14,7 @@ import com.ing.inghub.repository.LoanInstallmentRepository;
 import com.ing.inghub.repository.LoanRepository;
 import com.ing.inghub.service.customer.CustomerService;
 import com.ing.inghub.service.loan.LoanService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -38,6 +40,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanInstallmentRepository loanInstallmentRepository;
 
     @Override
+    @Transactional
     public CreateLoanResponse create(CreateLoanRequest createLoanRequest) throws IngException {
         Customer customer = customerService.findByCustomerId(createLoanRequest.getCustomerId()).orElseThrow(() -> new IngException(ErrorCodes.E_CUSTOMER_NOT_FOUND));
         checkCustomerLimits(customer, createLoanRequest.getLoanAmount());
@@ -48,7 +51,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public ListLoanResponse list(long customerId, int page, int size) throws IngException {
+    public ListLoanResponse getLoanByCustomerId(long customerId, int page, int size) throws IngException {
         validateUser(customerId);
         List<Loan> loanList = loanRepository.findAllByCustomerId(customerId, PageRequest.of(page, size));
         ListLoanResponse listLoanResponse = new ListLoanResponse();
@@ -59,7 +62,7 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
-    public ListInstallmentResponse installment(long loanId, int page, int size) throws IngException {
+    public ListInstallmentResponse getInstallmentByLoanId(long loanId, int page, int size) throws IngException {
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new IngException(ErrorCodes.E_LOAN_NOT_FOUND));
         validateUser(loan.getCustomerId());
         List<LoanInstallment> loanInstallmentList = loanInstallmentRepository.findAllByLoanIdOrderByOrder(loanId, PageRequest.of(page, size));
@@ -70,6 +73,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public PaymentResponse payment(PaymentRequest paymentRequest) throws IngException {
         Loan loan = loanRepository.findById(paymentRequest.getLoanId()).orElseThrow(() -> new IngException(ErrorCodes.E_LOAN_NOT_FOUND));
         validateUser(loan.getCustomerId());
@@ -83,7 +87,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
 
-    private PaymentDto payInstallments(List<LoanInstallment> notPaidInstallmentList, Customer customer, Long paymentAmount, Loan loan) throws IngException {
+    private PaymentDto payInstallments(List<LoanInstallment> notPaidInstallmentList, Customer customer, Long paymentAmount, Loan loan){
         Instant payableDateUntil = calculateDueDate(Constants.MAX_INSTALLMENT_COUNT_FOR_SINGLE_PAYMENT);
         List<LoanInstallment> installmentsUntilPayableDate = notPaidInstallmentList.stream()
                 .filter(installment -> installment.getDueDate().equals(payableDateUntil) || installment.getDueDate().isBefore(payableDateUntil)).toList();
@@ -142,7 +146,7 @@ public class LoanServiceImpl implements LoanService {
     private void validateUser(long customerId) throws IngException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Customer customer = customerService.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IngException(ErrorCodes.E_INVALID_ACCESS));
-        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority(CustomerStatusEnum.ADMIN.name())) && !customer.getId().equals(customerId)) {
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.name())) && !customer.getId().equals(customerId)) {
             throw new IngException(ErrorCodes.E_INVALID_ACCESS);
         }
     }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v0/loan")
+@RequestMapping("/api/v0/loans")
 public class LoanController {
 
     private final LoanService loanService;
@@ -26,21 +26,21 @@ public class LoanController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/list/{customerId}")
+    @GetMapping("/byCustomer/{customerId}")
     @Operation(method = "GET", summary = "List Customer Loans", description = "List Customer Loans")
-    public ResponseEntity<ListLoanResponse> list(@PathVariable("customerId") long customerId,
-                                                 @RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "10") int size) throws IngException {
-        ListLoanResponse response = loanService.list(customerId, page, size);
+    public ResponseEntity<ListLoanResponse> getLoanByCustomerId(@PathVariable("customerId") long customerId,
+                                                                @RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) throws IngException {
+        ListLoanResponse response = loanService.getLoanByCustomerId(customerId, page, size);
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/installment/{loanId}")
+    @GetMapping("/installmentsByLoanId/{loanId}")
     @Operation(method = "GET", summary = "List Installments For Given  Loan", description = "List Installments For Given  Loan")
-    public ResponseEntity<ListInstallmentResponse> installment(@PathVariable("loanId") long loanId,
-                                                               @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "15") int size) throws IngException {
-        ListInstallmentResponse response = loanService.installment(loanId, page, size);
+    public ResponseEntity<ListInstallmentResponse> getInstallmentByLoanId(@PathVariable("loanId") long loanId,
+                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "15") int size) throws IngException {
+        ListInstallmentResponse response = loanService.getInstallmentByLoanId(loanId, page, size);
         return ResponseEntity.ok().body(response);
     }
 

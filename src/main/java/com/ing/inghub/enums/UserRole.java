@@ -1,6 +1,6 @@
 package com.ing.inghub.enums;
 
-public enum CustomerStatusEnum {
+public enum UserRole {
     CUSTOMER,
     ADMIN
 }

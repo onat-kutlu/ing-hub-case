@@ -1,6 +1,6 @@
 package com.ing.inghub.model;
 
-import com.ing.inghub.enums.CustomerStatusEnum;
+import com.ing.inghub.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +36,6 @@ public class Customer {
     @Column(name = "USED_CREDIT_LIMIT")
     private Long usedCreditLimit;
 
-    @Column(name = "STATUS")
-    private String status = CustomerStatusEnum.CUSTOMER.name();
+    @Column(name = "ROLE")
+    private String role = UserRole.CUSTOMER.name();
 }

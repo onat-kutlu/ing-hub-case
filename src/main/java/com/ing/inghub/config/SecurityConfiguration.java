@@ -1,6 +1,6 @@
 package com.ing.inghub.config;
 
-import com.ing.inghub.enums.CustomerStatusEnum;
+import com.ing.inghub.enums.UserRole;
 import com.ing.inghub.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,11 +37,12 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v0/auth/register").permitAll()
                         .requestMatchers("/api/v0/auth/login").permitAll()
                         /*LoanController*/
-                        .requestMatchers("/api/v0/loan/create").hasAnyAuthority(CustomerStatusEnum.ADMIN.name())
-                        .requestMatchers("/api/v0/loan/list/**").authenticated()
-                        .requestMatchers("api/v0/loan/installment/**").authenticated()
-                        .requestMatchers("api/v0/loan/payment").authenticated()
+                        .requestMatchers("/api/v0/loans/create").hasRole(UserRole.ADMIN.name())
+                        .requestMatchers("/api/v0/loans/byCustomer/**").authenticated()
+                        .requestMatchers("/api/v0/loans/installmentsByLoanId/**").authenticated()
+                        .requestMatchers("/api/v0/loans/payment").authenticated()
                         .anyRequest().authenticated())
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
