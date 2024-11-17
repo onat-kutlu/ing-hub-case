@@ -34,6 +34,9 @@ public class Loan {
     @Column(name = "INSTALLMENT_COUNT")
     private Integer numberOfInstallment;
 
+    @Column(name = "SINGLE_INSTALLMENT_AMOUNT")
+    private Long singleInstallmentAmount;
+
     @Column(name = "CREATE_DATE")
     private Instant createDate;
 

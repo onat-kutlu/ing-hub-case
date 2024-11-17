@@ -10,4 +10,5 @@ public class Constants {
     public static final List<Integer> AVAILABLE_INSTALLMENT_COUNT_LUST = List.of(6, 9, 12, 24);
     public static final Double INTEREST_RATE_UPPER_LIMIT = 0.5;
     public static final Double INTEREST_RATE_LOWER_LIMIT = 0.1;
+    public static final Integer MAX_INSTALLMENT_COUNT_FOR_SINGLE_PAYMENT = 3;
 }

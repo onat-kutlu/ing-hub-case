@@ -13,4 +13,6 @@ public interface CustomerService {
     CustomerDto createCustomer(RegisterRequest registerRequest);
 
     Optional<Customer> findByCustomerId(Long customerId);
+
+    Customer save(Customer customer);
 }

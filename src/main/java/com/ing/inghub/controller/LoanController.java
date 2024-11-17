@@ -1,7 +1,6 @@
 package com.ing.inghub.controller;
 
-import com.ing.inghub.dto.loan.CreateLoanRequest;
-import com.ing.inghub.dto.loan.CreateLoanResponse;
+import com.ing.inghub.dto.loan.*;
 import com.ing.inghub.exception.IngException;
 import com.ing.inghub.service.loan.LoanService;
 import com.ing.inghub.validation.CreateLoanRequestValidator;
@@ -9,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +23,32 @@ public class LoanController {
             throws IngException {
         CreateLoanRequestValidator.validate(request);
         CreateLoanResponse response = loanService.create(request);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/list/{customerId}")
+    @Operation(method = "GET", summary = "List Customer Loans", description = "List Customer Loans")
+    public ResponseEntity<ListLoanResponse> list(@PathVariable("customerId") long customerId,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "10") int size) throws IngException {
+        ListLoanResponse response = loanService.list(customerId, page, size);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/installment/{loanId}")
+    @Operation(method = "GET", summary = "List Installments For Given  Loan", description = "List Installments For Given  Loan")
+    public ResponseEntity<ListInstallmentResponse> installment(@PathVariable("loanId") long loanId,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "15") int size) throws IngException {
+        ListInstallmentResponse response = loanService.installment(loanId, page, size);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/payment")
+    @Operation(method = "POST", summary = "Pay Loan", description = "Pay Loan")
+    public ResponseEntity<PaymentResponse> payment(@Valid @RequestBody final PaymentRequest request)
+            throws IngException {
+        PaymentResponse response = loanService.payment(request);
         return ResponseEntity.ok().body(response);
     }
 }

@@ -40,4 +40,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Optional<Customer> findByCustomerId(Long customerId) {
         return customerRepository.findById(customerId);
     }
+
+    @Override
+    public Customer save(Customer customer) {
+        return customerRepository.save(customer);
+    }
 }

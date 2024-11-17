@@ -9,7 +9,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CreateLoanRequestValidator {
 
-    public void validate(final CreateLoanRequest createLoanRequest) throws IngException {
+    public static void validate(final CreateLoanRequest createLoanRequest) throws IngException {
         validateInstallmentCount(createLoanRequest.getInstallmentCount());
         validateInterestRate(createLoanRequest.getInterestRate());
     }
